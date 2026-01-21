@@ -229,9 +229,7 @@ class CollaborativeCanvas {
     }
 
     private getServerUrl(): string {
-        // For production, you need to replace this with your Render backend URL
-        // Example: 'https://your-backend.onrender.com'
-        const productionBackendUrl = 'https://your-backend.onrender.com';
+        const productionBackendUrl = 'https://flam-sde.onrender.com';
 
         return window.location.hostname === 'localhost'
             ? 'http://localhost:3000'
