@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collaborative Canvas</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header class="header">
+        <div class="header-left">
+            <h1>Collaborative Canvas</h1>
+            <div class="status">
+                <div id="status-indicator" class="status-indicator connecting"></div>
+                <span id="status-text">Connecting...</span>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <div class="performance-metrics">
+                <div class="metric">
+                    <span class="metric-label">FPS</span>
+                    <span class="metric-value" id="fps-counter">60</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Latency</span>
+                    <span class="metric-value" id="latency">0ms</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Users</span>
+                    <span class="metric-value" id="user-count">1</span>
+                </div>
+            </div>
+            <div class="users-section">
+                <span class="users-label">Online:</span>
+                <div id="users-list" class="users-list"></div>
+            </div>
+        </div>
+    </header>
+    <div class="toolbar">
+        <div class="tool-group">
+            <button id="brush-btn" class="tool-btn active" title="Brush (B)">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2l3 3-4 4-3-3 4-4z"></path>
+                    <path d="M8 6L3 11l7 7 5-5-7-7z"></path>
+                </svg>
+                Brush
+            </button>
+            <button id="eraser-btn" class="tool-btn" title="Eraser (E)">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 20H7L3 16 12 7l5 5 3-3-5-5L2 17l4 4h14z"></path>
+                </svg>
+                Eraser
+            </button>
+        </div>
+        <div class="tool-group">
+            <label class="color-picker-label">
+                <span>Color:</span>
+                <div class="color-picker-wrapper">
+                    <input type="color" id="color-picker" value="#000000">
+                    <div class="color-preview" id="color-preview"></div>
+                </div>
+            </label>
+            <div class="color-palette">
+                <button class="color-swatch active" data-color="#000000" style="background: #000000"
+                    title="Black"></button>
+                <button class="color-swatch" data-color="#FF0000" style="background: #FF0000" title="Red"></button>
+                <button class="color-swatch" data-color="#00FF00" style="background: #00FF00" title="Green"></button>
+                <button class="color-swatch" data-color="#0000FF" style="background: #0000FF" title="Blue"></button>
+                <button class="color-swatch" data-color="#FFFF00" style="background: #FFFF00" title="Yellow"></button>
+                <button class="color-swatch" data-color="#FF00FF" style="background: #FF00FF" title="Magenta"></button>
+                <button class="color-swatch" data-color="#00FFFF" style="background: #00FFFF" title="Cyan"></button>
+            </div>
+        </div>
+        <div class="tool-group">
+            <label class="brush-size-label">
+                <span>Size: <span id="brush-size-value">3</span>px</span>
+                <input type="range" id="brush-size" min="1" max="50" value="3">
+            </label>
+        </div>
+        <div class="tool-group">
+            <button id="undo-btn" class="action-btn" title="Undo (Ctrl+Z)">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 7v6h6"></path>
+                    <path d="M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13"></path>
+                </svg>
+                Undo
+            </button>
+            <button id="redo-btn" class="action-btn" title="Redo (Ctrl+Y)">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 7v6h-6"></path>
+                    <path d="M3 17a9 9 0 019-9 9 9 0 016 2.3l3 2.7"></path>
+                </svg>
+                Redo
+            </button>
+            <button id="clear-btn" class="action-btn danger" title="Clear Canvas">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path>
+                </svg>
+                Clear
+            </button>
+        </div>
+    </div>
+    <div class="canvas-container">
+        <canvas id="drawing-canvas" class="drawing-canvas"></canvas>
+        <canvas id="cursor-canvas" class="cursor-canvas"></canvas>
+    </div>
+    <footer class="footer">
+        <div class="info">
+            <span>Tip: Use mouse or touch to draw. All users see changes in real-time!</span>
+        </div>
+        <div class="shortcuts">
+            <span>Shortcuts:
+                <kbd>B</kbd> Brush |
+                <kbd>E</kbd> Eraser |
+                <kbd>[</kbd><kbd>]</kbd> Size |
+                <kbd>Ctrl+Z</kbd> Undo |
+                <kbd>Ctrl+Y</kbd> Redo
+            </span>
+        </div>
+    </footer>
+    <div id="toast-container" class="toast-container"></div>
+    <div id="reconnect-modal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-icon"></div>
+            <h3>Reconnecting...</h3>
+            <p>Lost connection to server. Attempting to reconnect...</p>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <p class="reconnect-attempts">Attempt <span id="reconnect-attempt">1</span> of 5</p>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="bundle.js"></script>
+</body>
+
+</html>

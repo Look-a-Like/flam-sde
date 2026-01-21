@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: collaborative-canvas-backend
+    runtime: node
+    region: oregon
+    plan: free
+    branch: main
+    buildCommand: npm install && npm run build
+    startCommand: node dist/server/src/server/index.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ALLOWED_ORIGINS
+        value: https://your-netlify-app.netlify.app
+    autoDeploy: true
